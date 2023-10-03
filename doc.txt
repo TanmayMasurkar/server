@@ -1,0 +1,19 @@
+npm i jsonwebtoken
+      mongoose 
+      bcrpyt 
+      body-parser 
+      express 
+      dotenv
+      cookies
+
+npm i passport
+      express-session
+      passport-local
+      passport-google-oauth
+
+
+users : {
+    role: ["user" , "admin", "subAdmin"]
+}
+
+https://code.pieces.app/blog/role-based-access-systems-in-nodejs
