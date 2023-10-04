@@ -35,6 +35,12 @@ const SingleScreenSchema = new Schema({
             type:Array
         }
     },
+    password:{
+        type: String,
+    },
+    url:{
+        type:String,
+    },
     createdAt: {
         type: Date,
         default: Date.now,
