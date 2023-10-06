@@ -41,6 +41,12 @@ const SingleScreenSchema = new Schema({
     url:{
         type:String,
     },
+    status:{
+        type:Number,
+        default:0,
+        min:0,
+        max:1,
+    },
     createdAt: {
         type: Date,
         default: Date.now,

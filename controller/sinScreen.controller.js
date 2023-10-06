@@ -41,6 +41,7 @@ export const addData = async (req, res) => {
         },
         password:password,
         url: uniqueUrl,
+        status:0,
       });
 
       await singleScreen.save();
@@ -73,40 +74,23 @@ export const getUserData = async (req, res) => {
   }
 };
 
-// export const getSingleScreen = async (req, res) => {
-//   const productId = req.params.productId;
-//   try {
-//     const product = await SingleScreenModel.findById(productId);
-
-//     if (!product) {
-//       return res.status(404).json({ message: "Product not found" });
-//     }
-
-//     return res.status(200).json({
-//       data: product,
-//       message: "Product retrieved successfully",
-//     });
-//   } catch (error) {
-//     console.error("Error retrieving product:", error);
-//     return res.status(500).json({ message: "Internal server error" });
-//   }
-// };
-
-
 export const getSingleScreen = async (req, res) => {
-  const uniqueUrl = req.params.uniqueUrl;
-  const password = req.query.passwordOne;
-
   try {
-    const product = await SingleScreenModel.findOne({ uniqueUrl: uniqueUrl });
+    const { urlName } = req.body; 
+
+    const product = await SingleScreenModel.findOne({ url: urlName });
 
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    if (password !== product.password) {
-      return res.status(401).json({ message: "Unauthorized" });
+    if (product.status === 1) {
+      return res.status(401).json({ message: "This screen is already in use." });
     }
+
+    // Set the status to 1 to mark it as in use
+    product.status = 1;
+    await product.save();
 
     return res.status(200).json({
       data: product,
@@ -117,6 +101,60 @@ export const getSingleScreen = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+
+export const secureSingleScreen = async (req, res) => {
+  try {
+    const { name, password } = req.body;  
+    const product = await SingleScreenModel.findOne({ name: name });
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    if (password !== product.password) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    if (product.status === 1) {
+      return res.status(401).json({ message: "This screen is already in use." });
+    }
+
+    // Update status to 1
+    product.status = 1;
+    await product.save();
+
+    return res.status(200).json({
+      data: product,
+      message: "Product retrieved successfully",
+    });
+  } catch (error) {
+    console.error("Error retrieving product:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const closeSingleScreen = async(req,res)=>{
+  try {
+    const { screenName } = req.body;
+    const product = await SingleScreenModel.findOne({ name: screenName });
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Set the status to 0 to mark it as available
+    product.status = 0;
+    await product.save();
+
+    return res.status(200).json({ message: "Status updated successfully" });
+  } catch (error) {
+    console.error("Error updating status:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 
 // export const deleteSingleScreen = async (req, res) => {
 //   const screenId = req.params.id;
